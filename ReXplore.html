@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>ReXplore</title>
+     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;700;800&display=swap"
+          rel="stylesheet">
+     <link rel="stylesheet" href="{{ url_for('static', filename='Rexplore.css') }}">
+
+
+</head>
+
+<body>
+     <canvas id="nc"></canvas>
+     <div class="orb orb-1"></div>
+     <div class="orb orb-2"></div>
+
+     <div class="container">
+          <header>
+               <div class="logo-line">
+                    <span class="logo-re">Re</span><span class="logo-x">X</span><span class="logo-plore">plore</span>
+               </div>
+               <div class="subtitle">A Web-Based Regular Expression Explorer</div>
+               <p class="welcome">Welcome! Enter your <strong>test string</strong>, choose an
+                    <strong>operation</strong>, type your <strong>pattern</strong> and hit Execute.</p>
+          </header>
+
+          <div class="layout">
+               <div class="main">
+
+                    <!-- THE FORM — same concept as your Form.html -->
+                    <form action="/execute" method="POST">
+
+                         <!-- TEST STRING -->
+                         <div class="card" style="animation-delay:.05s">
+                              <div class="card-header">
+                                   <div class="card-icon green">◈</div><span class="card-title">Test String</span>
+                              </div>
+                              <div class="card-body">
+                                   <textarea name="test_str" id="test_str"
+                                        placeholder="Type or paste your test string here…&#10;e.g. Hello World! Email: chidvilasnaidu99@gmail.com  Phone: 9666331***"
+                                        rows="5"></textarea>
+                              </div>
+                         </div>
+
+                         <!-- PATTERN + OPERATION -->
+                         <div class="card" style="animation-delay:.1s">
+                              <div class="card-header">
+                                   <div class="card-icon purple">✦</div><span class="card-title">Pattern &amp;
+                                        Operation</span>
+                              </div>
+                              <div class="card-body">
+
+                                   <div class="regex-wrap">
+                                        <div class="delim">/</div>
+                                        <input type="text" name="pattern" id="patternInput"
+                                             placeholder="enter your regex pattern…" autocomplete="off"
+                                             spellcheck="false">
+                                        <div class="delim">/</div>
+                                   </div>
+
+                                   <div class="op-wrap">
+                                        <select name="operation" id="opSelect">
+                                             <option value="findall">re.findall</option>
+                                             <option value="search">re.search</option>
+                                             <option value="match">re.match</option>
+                                             <option value="finditer">re.finditer</option>
+                                             <option value="sub">re.sub</option>
+                                             <option value="split">re.split</option>
+                                             <option value="compile">re.compile</option>
+                                        </select>
+                                   </div>
+
+                                   <div id="replace-wrap">
+                                        <input type="text" name="replace" id="replaceInput"
+                                             placeholder="replacement string… (use \1, \2 for groups)"
+                                             spellcheck="false">
+                                   </div>
+
+                                   <!-- Quick Reference -->
+                                   <div class="qr-toggle" id="qrToggle"><span class="qr-arrow">▶</span><span>Quick
+                                             Reference</span></div>
+                                   <div class="qr-grid" id="qrGrid">
+                                        <div class="qr-item" data-p="\d+">
+                                             <div class="qr-pat">\d+</div>
+                                             <div class="qr-desc">One or more digits</div>
+                                        </div>
+                                        <div class="qr-item" data-p="\w+">
+                                             <div class="qr-pat">\w+</div>
+                                             <div class="qr-desc">Word characters</div>
+                                        </div>
+                                        <div class="qr-item" data-p="\s+">
+                                             <div class="qr-pat">\s+</div>
+                                             <div class="qr-desc">Whitespace</div>
+                                        </div>
+                                        <div class="qr-item" data-p=".+">
+                                             <div class="qr-pat">.+</div>
+                                             <div class="qr-desc">Any char (not newline)</div>
+                                        </div>
+                                        <div class="qr-item" data-p="^">
+                                             <div class="qr-pat">^</div>
+                                             <div class="qr-desc">Start of line</div>
+                                        </div>
+                                        <div class="qr-item" data-p="$">
+                                             <div class="qr-pat">$</div>
+                                             <div class="qr-desc">End of line</div>
+                                        </div>
+                                        <div class="qr-item" data-p="[a-z]">
+                                             <div class="qr-pat">[a-z]</div>
+                                             <div class="qr-desc">Character class</div>
+                                        </div>
+                                        <div class="qr-item" data-p="(group)">
+                                             <div class="qr-pat">(group)</div>
+                                             <div class="qr-desc">Capture group</div>
+                                        </div>
+                                        <div class="qr-item" data-p="a|b">
+                                             <div class="qr-pat">a|b</div>
+                                             <div class="qr-desc">Alternation</div>
+                                        </div>
+                                        <div class="qr-item" data-p="\b\w+\b">
+                                             <div class="qr-pat">\b\w+\b</div>
+                                             <div class="qr-desc">Whole word</div>
+                                        </div>
+                                        <div class="qr-item" data-p="(\w+)@(\w+)\.(\w+)">
+                                             <div class="qr-pat">(\w+)@(\w+)\.(\w+)</div>
+                                             <div class="qr-desc">Email pattern</div>
+                                        </div>
+                                        <div class="qr-item" data-p="\d{3}-\d{4}">
+                                             <div class="qr-pat">\d{3}-\d{4}</div>
+                                             <div class="qr-desc">Phone segment</div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <!-- BUTTONS -->
+                         <div class="btn-row">
+                              <button type="submit" class="btn-submit">◉ &nbsp;Execute</button>
+                              <a href="/" class="btn-clear">⌫ Clear</a>
+                         </div>
+
+                    </form><!-- end form -->
+
+               </div><!-- /main -->
+
+               <!-- SIDEBAR -->
+               <aside class="sidebar">
+                    <div class="sb-title">◈ RegEx Notes</div>
+                    <div id="sbSections"></div>
+               </aside>
+          </div>
+     </div>
+
+     <footer>
+          <div class="footer-inner">
+               <div>
+                    <div class="footer-logo"><span class="re">Re</span><span class="x">X</span><span
+                              class="pl">plore</span></div>
+                    <div class="footer-copy">Built for learners. Python + Flask backend.<br>Connect with the developer:
+                    </div>
+               </div>
+               <div class="footer-links">
+                    <a href="https://github.com/chidvilasnaidu" target="_blank" class="f-link"><svg viewBox="0 0 24 24">
+                              <path
+                                   d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.38 7.86 10.9.57.1.78-.25.78-.55v-2c-3.19.69-3.86-1.54-3.86-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.67 1.24 3.32.95.1-.74.4-1.24.72-1.53-2.55-.29-5.23-1.27-5.23-5.67 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.15 1.18a10.9 10.9 0 012.87-.39c.97 0 1.95.13 2.87.39 2.18-1.49 3.14-1.18 3.14-1.18.63 1.57.23 2.73.12 3.02.74.8 1.18 1.82 1.18 3.07 0 4.41-2.69 5.38-5.25 5.66.41.36.78 1.06.78 2.13v3.16c0 .31.21.66.79.55A11.51 11.51 0 0023.5 12C23.5 5.73 18.27.5 12 .5z" />
+                         </svg>GitHub</a>
+                    <a href="http://www.linkedin.com/in/chidvilas-kumkapalla-60703a1b3" target="_blank" class="f-link"><svg viewBox="0 0 24 24">
+                              <path
+                                   d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.25 2.36 4.25 5.43v6.31zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM3.56 20.45h3.56V9H3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" />
+                         </svg>LinkedIn</a>
+                    <a href="https://drive.google.com/drive/folders/1LUu8Afp03M-VuEd0CASPu3C8R85e-PFG?usp=sharing" class="f-link"><svg viewBox="0 0 24 24">
+                              <path
+                                   d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 4h5v7h7v9H6V4zm2 9h8v1H8v-1zm0 2h8v1H8v-1zm0-4h3v1H8v-1z" />
+                         </svg>Resume</a>
+                    <a href="chidvilasnaidu99@gmail.com" class="f-link"><svg viewBox="0 0 24 24">
+                              <path
+                                   d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                         </svg>Email</a>
+                    <a href="+91 9666331979" class="f-link"><svg viewBox="0 0 24 24">
+                              <path
+                                   d="M17 1.01L7 1a2 2 0 00-2 2v18a2 2 0 002 2h10a2 2 0 002-2V3a2 2 0 00-2-1.99zM17 19H7V5h10v14zm-5 2a1 1 0 110-2 1 1 0 010 2z" />
+                         </svg>Mobile</a>
+               </div>
+          </div>
+          <div class="footer-disc">© 2026 ReXplore — For educational purposes only. Font: JetBrains Mono © JetBrains
+               (SIL OFL). All third-party assets remain property of their respective owners.</div>
+     </footer>
+
+     <script>
+          // Neuron canvas
+          (function () {
+               const c = document.getElementById('nc'), ctx = c.getContext('2d');
+               let W, H, nodes;
+               function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight }
+               function init() { nodes = Array.from({ length: 55 }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3, r: Math.random() * 2 + 1.2, p: Math.random() * Math.PI * 2 })) }
+               function draw() {
+                    ctx.clearRect(0, 0, W, H);
+                    nodes.forEach(n => { n.x += n.vx; n.y += n.vy; n.p += .018; if (n.x < 0 || n.x > W) n.vx *= -1; if (n.y < 0 || n.y > H) n.vy *= -1 });
+                    for (let i = 0; i < nodes.length; i++)for (let j = i + 1; j < nodes.length; j++) {
+                         const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y, d = Math.sqrt(dx * dx + dy * dy);
+                         if (d < 130) { ctx.beginPath(); ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y); ctx.strokeStyle = `rgba(124,92,252,${(1 - d / 130) * .28})`; ctx.lineWidth = .6; ctx.stroke() }
+                    }
+                    nodes.forEach(n => { const p = .7 + .3 * Math.sin(n.p); ctx.beginPath(); ctx.arc(n.x, n.y, n.r * p, 0, Math.PI * 2); ctx.fillStyle = `rgba(252,92,160,${.45 + .3 * p})`; ctx.fill() });
+                    requestAnimationFrame(draw)
+               }
+               window.addEventListener('resize', () => { resize(); init() }); resize(); init(); draw();
+          })();
+
+          // Show/hide replace input
+          document.getElementById('opSelect').addEventListener('change', function () {
+               document.getElementById('replace-wrap').style.display = this.value === 'sub' ? 'block' : 'none';
+          });
+
+          // Quick reference
+          document.getElementById('qrToggle').addEventListener('click', function () {
+               this.classList.toggle('open'); document.getElementById('qrGrid').classList.toggle('open');
+          });
+          document.querySelectorAll('.qr-item').forEach(el => el.addEventListener('click', () => {
+               document.getElementById('patternInput').value = el.dataset.p;
+               document.getElementById('patternInput').focus();
+          }));
+
+          // Sidebar data
+          const SB = [
+               { n: 'What is RegEx?', t: 'Intro', b: `A <strong>Regular Expression</strong> is a pattern that defines a search template for strings — used for searching, validation and replacement.<div class="ex">Pattern: <code>\\d+</code> → matches "42" in "I am 42"</div>` },
+               { n: 'Character Classes', t: '[ ]', b: `<ul><li><code>[abc]</code> — a, b or c</li><li><code>[^abc]</code> — NOT a,b,c</li><li><code>[a-z]</code> — lowercase</li><li><code>[A-Z]</code> — uppercase</li><li><code>[0-9]</code> — digit</li></ul><div class="ex"><code>[aeiou]</code> matches any vowel</div>` },
+               { n: 'Predefined Classes', t: '\\d \\w \\s', b: `<ul><li><code>\\d</code> digit · <code>\\D</code> non-digit</li><li><code>\\w</code> word char · <code>\\W</code> non-word</li><li><code>\\s</code> whitespace · <code>\\S</code> non-ws</li><li><code>.</code> any char (not newline)</li></ul>` },
+               { n: 'Anchors', t: '^ $', b: `<ul><li><code>^</code> start of string/line</li><li><code>$</code> end of string/line</li><li><code>\\b</code> word boundary</li></ul><div class="ex"><code>^Hello</code> only matches at start</div>` },
+               { n: 'Quantifiers', t: '* + ?', b: `<ul><li><code>*</code> 0 or more · <code>+</code> 1 or more</li><li><code>?</code> 0 or 1 (optional)</li><li><code>{n}</code> exactly n · <code>{n,m}</code> n to m</li></ul><div class="ex"><code>\\d{3}-\\d{4}</code> → "555-1234"</div>` },
+               { n: 'Greedy vs Lazy', t: '*? +?', b: `Greedy matches <strong>as much as possible</strong>. Add <code>?</code> to make it lazy (match as little as possible).<div class="ex">Greedy <code>&lt;.+&gt;</code> → whole string<br>Lazy <code>&lt;.+?&gt;</code> → shortest tag</div>` },
+               { n: 'Groups', t: '( )', b: `<ul><li><code>(abc)</code> capture group</li><li><code>(?:abc)</code> non-capturing</li><li><code>\\1</code> backreference</li></ul><div class="ex"><code>(\\w+)@(\\w+)</code> captures user + domain</div>` },
+               { n: 'Alternation', t: 'a|b', b: `<code>|</code> = logical OR.<div class="ex"><code>cat|dog</code> matches "cat" or "dog"</div>` },
+               { n: 'Lookahead', t: '(?= )', b: `<ul><li><code>(?=abc)</code> positive lookahead</li><li><code>(?!abc)</code> negative lookahead</li><li><code>(?&lt;=abc)</code> lookbehind</li></ul><div class="ex"><code>\\d+(?= kg)</code> number before " kg"</div>` },
+               { n: 'Common Patterns', t: 'Examples', b: `<ul><li>Email: <code>[\\w.]+@[\\w]+\\.[a-z]{2,}</code></li><li>URL: <code>https?://\\S+</code></li><li>Date: <code>\\d{2}/\\d{2}/\\d{4}</code></li><li>IPv4: <code>\\d{1,3}(\\.\\d{1,3}){3}</code></li></ul>` },
+               { n: 'Python re Module', t: 'Python', b: `<ul><li><code>re.match</code> — match at start</li><li><code>re.search</code> — first match anywhere</li><li><code>re.findall</code> — all matches as list</li><li><code>re.finditer</code> — iterator of matches</li><li><code>re.sub</code> — find and replace</li><li><code>re.split</code> — split by pattern</li><li><code>re.compile</code> — compile pattern</li></ul>` },
+               { n: 'Flags', t: 're.I re.M', b: `<ul><li><code>re.I</code> case-insensitive</li><li><code>re.M</code> multiline</li><li><code>re.S</code> dotall (dot = newline too)</li><li><code>re.X</code> verbose (allow comments)</li></ul>` },
+          ];
+          const sc = document.getElementById('sbSections');
+          SB.forEach((item, i) => {
+               const s = document.createElement('div'); s.className = 'sb-sec';
+               s.innerHTML = `<div class="sb-tog" id="st${i}"><span class="sb-name">${item.n}</span><span class="sb-tag">${item.t}</span><span class="sb-arrow">▶</span></div><div class="sb-body" id="sb${i}">${item.b}</div>`;
+               sc.appendChild(s);
+               s.querySelector(`#st${i}`).addEventListener('click', () => {
+                    const t = s.querySelector(`#st${i}`), b = s.querySelector(`#sb${i}`), was = b.classList.contains('open');
+                    document.querySelectorAll('.sb-body').forEach(x => x.classList.remove('open'));
+                    document.querySelectorAll('.sb-tog').forEach(x => x.classList.remove('active'));
+                    if (!was) { b.classList.add('open'); t.classList.add('active'); }
+               });
+          });
+     </script>
+</body>
+
+</html>
